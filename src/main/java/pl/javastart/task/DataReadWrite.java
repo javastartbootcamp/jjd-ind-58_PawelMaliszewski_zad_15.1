@@ -1,9 +1,6 @@
 package pl.javastart.task;
 
-import pl.javastart.task.Comparators.SortByLastNameComparator;
-import pl.javastart.task.Comparators.SortByNameComparator;
-import pl.javastart.task.Comparators.SortByScoreComparator;
-
+import pl.javastart.task.Comparators.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,15 +11,16 @@ public class DataReadWrite {
     private static final int FIRST_NAME = 1;
     private static final int LAST_NAME = 2;
     private static final int SCORE = 3;
-    private static final String STOP =  "stop";
-    PlayersList pl = new PlayersList();
+    private static final String STOP = "stop";
+    private static final int ASCENDING = 1;
+    private static final int DESCENDING = 2;
+    PlayersList playersList = new PlayersList();
     Comparator<Player> comparator = null;
 
     public void getPlayersData(Scanner scanner) {
         boolean stop = false;
         while (!stop) {
-            System.out.println("Podaj wynik kolejnego gracza (lub stop):");
-            String text = scanner.nextLine();
+            String text = givePlayerScore(scanner);
             if (text.equalsIgnoreCase(STOP)) {
                 sortListByOption(scanner);
                 stop = true;
@@ -32,20 +30,68 @@ public class DataReadWrite {
         }
     }
 
+    private static String givePlayerScore(Scanner scanner) {
+        System.out.printf("%s%s%s", "Podaj wynik kolejnego gracza (lub ", STOP, "):");
+        return scanner.nextLine();
+    }
+
     private void sortListByOption(Scanner scanner) {
         try {
-            System.out.println("Po jakim parametrze posortować? (1 - imię, 2 - nazwisko, 3 - wynik)");
-            int option = scanner.nextInt();
-            switch (option) {
-                case FIRST_NAME -> comparator = new SortByNameComparator();
-                case LAST_NAME -> comparator =  new SortByLastNameComparator();
-                case SCORE -> comparator = new SortByScoreComparator();
+            switch (getOption(scanner)) {
+                case FIRST_NAME -> {
+                    if (isAscending(scanner)) {
+                        comparator = new SortByFirstNameAscending();
+                    } else {
+                        comparator = new SortByFirstNameDescending();
+                    }
+                }
+                case LAST_NAME -> {
+                    if (isAscending(scanner)) {
+                        comparator = new SortByLastNameAscending();
+                    } else {
+                        comparator = new SortByLastNameDescending();
+                    }
+                }
+                case SCORE -> {
+                    if (isAscending(scanner)) {
+                        comparator = new SortByScoreAscending();
+                    } else {
+                        comparator = new SortByScoreDescending();
+                    }
+                }
                 default -> throw new NumberFormatException();
             }
+            System.out.println();
             writeToFile();
         } catch (NumberFormatException e) {
             System.out.println("Format nieprawidłowy Koniec Programu");
         }
+    }
+
+    private static int getOption(Scanner scanner) {
+        //System.out.printf("Po jakim parametrze posortować? (1 - imię, 2 - nazwisko, 3 - wynik)");
+        System.out.printf("%s%d%s%d%s%d%s",
+                "Po jakim parametrze posortować? (",
+                FIRST_NAME, " - imię, ",
+                LAST_NAME, " - nazwisko, ",
+                SCORE, " - wynik)");
+        return scanner.nextInt();
+    }
+
+    private static boolean isAscending(Scanner scanner) {
+        boolean isAscending = true;
+        System.out.println("Sortować rosnąco czy malejąco? (1 - rosnąco, 2 - malejąco)");
+        System.out.printf("%s%d%s%d%s",
+                "Sortować rosnąco czy malejąco? (",
+                ASCENDING, " - rosnąco, ",
+                DESCENDING, " - malejąco)");
+        int optionTwo = scanner.nextInt();
+        if (optionTwo == DESCENDING) {
+            isAscending = false;
+        } else if (optionTwo < ASCENDING || optionTwo > DESCENDING) {
+            throw new NumberFormatException();
+        }
+        return isAscending;
     }
 
     private void addPlayerToTheList(String text) {
@@ -55,7 +101,7 @@ public class DataReadWrite {
             if (split[0].length() == 0 || split[1].length() == 0) {
                 throw new NumberFormatException();
             }
-            pl.addPlayer(split[0], split[1], score);
+            playersList.addPlayer(split[0], split[1], score);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
             System.out.println("Format nieprawidłowy");
         }
@@ -64,8 +110,8 @@ public class DataReadWrite {
     private void writeToFile() {
         try (var fileWriter = new BufferedWriter(new FileWriter("stats.csv"))
         ) {
-            pl.getPlayers().sort(comparator);
-            for (Player player : pl.getPlayers()) {
+            playersList.getPlayers().sort(comparator);
+            for (Player player : playersList.getPlayers()) {
                 fileWriter.write(player.toString());
                 fileWriter.newLine();
             }
