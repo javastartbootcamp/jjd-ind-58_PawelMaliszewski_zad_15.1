@@ -31,7 +31,7 @@ public class DataReadWrite {
     }
 
     private static String givePlayerScore(Scanner scanner) {
-        System.out.printf("%s%s%s", "Podaj wynik kolejnego gracza (lub ", STOP, "):");
+        System.out.printf("%s%s%s", "Podaj wynik kolejnego gracza (lub ", STOP, "):\n");
         return scanner.nextLine();
     }
 
@@ -74,13 +74,12 @@ public class DataReadWrite {
                 "Po jakim parametrze posortować? (",
                 FIRST_NAME, " - imię, ",
                 LAST_NAME, " - nazwisko, ",
-                SCORE, " - wynik)");
+                SCORE, " - wynik)\n");
         return scanner.nextInt();
     }
 
     private static boolean isAscending(Scanner scanner) {
         boolean isAscending = true;
-        System.out.println("Sortować rosnąco czy malejąco? (1 - rosnąco, 2 - malejąco)");
         System.out.printf("%s%d%s%d%s",
                 "Sortować rosnąco czy malejąco? (",
                 ASCENDING, " - rosnąco, ",
