@@ -69,7 +69,6 @@ public class DataReadWrite {
     }
 
     private static int getOption(Scanner scanner) {
-        //System.out.printf("Po jakim parametrze posortować? (1 - imię, 2 - nazwisko, 3 - wynik)");
         System.out.printf("%s%d%s%d%s%d%s",
                 "Po jakim parametrze posortować? (",
                 FIRST_NAME, " - imię, ",
