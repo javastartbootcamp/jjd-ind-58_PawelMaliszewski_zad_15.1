@@ -10,7 +10,7 @@ public class PlayersList {
         return players;
     }
 
-    public void addPlayer(String firstName, String lastname, int score) {
-        players.add(new Player(firstName, lastname, score));
+    public void addPlayer(Player player) {
+        players.add(player);
     }
 }
